@@ -1,0 +1,22 @@
+{
+  "name": "nudge-desk",
+  "private": true,
+  "packageManager": "pnpm@12.10.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @nudge/web dev",
+    "build": "pnpm --filter @nudge/web build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm --filter @nudge/web lint",
+    "test": "pnpm -r test",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "prettier": "^3.9.9",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}
