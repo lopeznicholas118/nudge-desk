@@ -4,6 +4,16 @@
 
 ### **Deployed** the project and configured the start page
 
+### **Created** the GitHub repository with a pull request
+
+### **Integrated** branch protection to block force pushes
+
+### **Built** the database using supabase
+
+### **Tested** the database under the command `supabase test db`
+– When security is upheld, 10/10 PASS rate
+– When security is broken (configuring `using = (true)` under `contacts_own` in the migration SQL file), multiple tests fail
+
 ## October 8th, 2026
 
 ### **Created** the github repository for nudge-desk
