@@ -1,21 +1,26 @@
 ## What changed
 
-Created the Supabase client and database with associated tables under RLS.
-Added pgTAP tests with 10/10 pass rate.
-Purposely broke the policy at line 73 of `20261009231856_create_contacts_and_interactions.sql` and tests failed
+Incorporated Zod schemas for contacts and interactions
+Added nudge scoring and ranking
+Applied nudge scoring, ranking, and property tests
 
 ## Why
 
-The Supabase client is necessary so that the system can gather information regarding customers overdue in contacting
-Testing the client showcases the security system in place, and purposely breaking the policy highlights a reliable security system, as security tests not shown to fail is not proven to catch anything.
+Incorporating the Zod schemas showcases the need to include data-validated contacts that will let the user know who is overdue to contact.
+Nudge scoring and ranking is crucial for the user to know who is overdue and who is nearly overdue based on the user's preferences (close: 30 days, warm: 90 days, weak: 180 days).
+Testing the implementation of scoring and ranking, as well as including property tests, is important to verify the data-validated inputs and to validate the outputs as expected.
 
 ## How I tested
 - [x] `pnpm typecheck`
 - [x] `pnpm lint`
 - [x] `pnpm test`
 - [x] `supabase test db`
+- [x] `pnpm --filter @nudge/core test`
+
+I implemented and utilized tests by adding test files for the scoring, ranking, and property. I also intentionally changed line 47 from `daysSince / cadenceDays` to `cadenceDays / daysSince`, which leads to the tests failing, including the property tests which elicited a shrunk counterexample and a seed.
 
 ## Notes / screenshots
 
-<img width="535" height="43" alt="pgTAP tests passed" src="https://github.com/user-attachments/assets/5d67c105-80e2-4852-a55f-0f513cbb5130" />
-<img width="543" height="44" alt="pgTAP tests failed after purposely breaking the policy" src="https://github.com/user-attachments/assets/350c7a1a-6960-4143-beb5-20b1f0cacae8" />
+<img width="518" height="123" alt="nudge tests passed" src="https://github.com/user-attachments/assets/7c3b6cd8-3d2c-4ca2-8345-488000f09960" />
+<img width="530" height="124" alt="nudge tests failed after a mutation check" src="https://github.com/user-attachments/assets/c2c3aedb-4c2b-4feb-8692-cc1bb9b2dea5" />
+
