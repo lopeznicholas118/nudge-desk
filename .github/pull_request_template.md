@@ -1,6 +1,7 @@
 ## What changed
 
 Incorporated login and dashboard auth on a proxy session
+
 Integrated Supabase email/password auth on the database
 
 ## Why
