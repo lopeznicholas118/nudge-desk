@@ -1,5 +1,23 @@
 # Developer Log – Nudge Desk
 
+## October 12th, 2026
+
+### **Incorporated** a session proxy
+
+### **Included** Supabase integration storing the user's credentials (email/password auth) in a database
+
+### **Created** website with simple login and dashboard
+
+## October 10th, 2026
+
+### **Added** Zod schemas for contacts and interactions
+
+### **Developed** nudge scoring and ranking according to the preferences of the user
+
+### **Tested** nudge ranking under the command `pnpm --filter @nudge/core test`
+– When security is upheld, all 25 tests are passed
+– When security is broken (changing `daysSince / cadenceDays` to `cadenceDays / daysSince` at line 47 of the `nudge.ts` file), multiple tests fail
+
 ## October 9th, 2026
 
 ### **Deployed** the project and configured the start page
