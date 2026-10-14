@@ -37,6 +37,20 @@ export type Database = {
                   Relationships: [
                     
                   ]
+                },"google_connections": {
+                  Row: {
+                    "created_at": string,"google_email": string,"last_sync_summary": Json | null,"last_synced_at": string | null,"refresh_token_encrypted": string,"scopes": (string)[],"status": string,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"google_email": string,"last_sync_summary"?: Json | null,"last_synced_at"?: string | null,"refresh_token_encrypted": string,"scopes": (string)[],"status"?: string,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"google_email"?: string,"last_sync_summary"?: Json | null,"last_synced_at"?: string | null,"refresh_token_encrypted"?: string,"scopes"?: (string)[],"status"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"interactions": {
                   Row: {
                     "contact_id": string,"created_at": string,"external_id": string | null,"id": string,"kind": string,"occurred_at": string,"source": string,"summary": string | null,"user_id": string
