@@ -1,13 +1,14 @@
 ## What changed
 
-Incorporated login and dashboard auth on a proxy session
+Integrated Google Calendar OAuth
 
-Integrated Supabase email/password auth on the database
+Included dashboard UI and syncing with a user's Google calendar
 
 ## Why
 
-For the user to access the nudge desk agent, they need to enter their credentials in a login page and they must be presented with a dashboard.
-The Supabase database holds the client's credentials.
+The Google Calendar OAuth with credentials in place allows the user to connect their Google calendar to Nudge Desk.
+The system pulls contacts from the user, including contacts that they have not contacted in a long time.
+The "close", "warm", and "weak" declarations for relationship are also included for the program to designate alerts based on the relationship type with the user.
 
 ## How I tested
 - [x] `pnpm typecheck`
@@ -16,10 +17,16 @@ The Supabase database holds the client's credentials.
 - [x] `pnpm build`
 - [x] `supabase test db`
 - [x] `pnpm --filter @nudge/core test`
+- [x] `pnpm --filter @nudge/web test`
 - [x] `pnpm dev`
 
 I verified the code from the dev website as shown in the image. I changed Claude's suggested black text to white text for readability.
+Also, I troubleshot an AI error in TypeScript: a constant couldn't be defined under a Json due to it being an interface (SyncSummary) instead of a type. See `apps/web/lib/google/sync.ts`.
 
 ## Notes / screenshots
 
-<img width="1214" height="780" alt="Login page" src="https://github.com/user-attachments/assets/f3243a10-30d6-4bb6-90c2-e94bbe6f6292" />
+<img width="574" height="57" alt="supabase test db: 13/13 tests passed" src="https://github.com/user-attachments/assets/bac5eb19-0d5e-4244-8a7e-c6aa097e5d10" />
+<img width="512" height="144" alt="pnpm test: all tests passed" src="https://github.com/user-attachments/assets/b2d3b1c1-788c-4422-be74-186bc033d68b" />
+<img width="517" height="197" alt="encryption test passed" src="https://github.com/user-attachments/assets/d3218fb0-41eb-414f-9a83-0f2a27914c87" />
+<img width="681" height="522" alt="dashboard demo" src="https://github.com/user-attachments/assets/fcfa081b-8156-44eb-ae5f-1a077e15e8ec" />
+
