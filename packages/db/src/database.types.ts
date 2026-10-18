@@ -23,7 +23,41 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "contacts": {
+            "agent_runs": {
+                  Row: {
+                    "created_at": string,"drafts_created": number,"error": string | null,"final_text": string | null,"finished_at": string | null,"id": string,"input_tokens": number,"model": string,"output_tokens": number,"prompt_version": string,"status": string,"triggered_by": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"drafts_created"?: number,"error"?: string | null,"final_text"?: string | null,"finished_at"?: string | null,"id"?: string,"input_tokens"?: number,"model": string,"output_tokens"?: number,"prompt_version": string,"status"?: string,"triggered_by": string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"drafts_created"?: number,"error"?: string | null,"final_text"?: string | null,"finished_at"?: string | null,"id"?: string,"input_tokens"?: number,"model"?: string,"output_tokens"?: number,"prompt_version"?: string,"status"?: string,"triggered_by"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"agent_steps": {
+                  Row: {
+                    "created_at": string,"error": string | null,"id": number,"input": Json | null,"input_tokens": number | null,"is_error": boolean,"kind": string,"latency_ms": number | null,"output": string | null,"output_tokens": number | null,"run_id": string,"step_index": number,"stop_reason": string | null,"tool_name": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"error"?: string | null,"id"?: never,"input"?: Json | null,"input_tokens"?: number | null,"is_error"?: boolean,"kind": string,"latency_ms"?: number | null,"output"?: string | null,"output_tokens"?: number | null,"run_id": string,"step_index": number,"stop_reason"?: string | null,"tool_name"?: string | null,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"error"?: string | null,"id"?: never,"input"?: Json | null,"input_tokens"?: number | null,"is_error"?: boolean,"kind"?: string,"latency_ms"?: number | null,"output"?: string | null,"output_tokens"?: number | null,"run_id"?: string,"step_index"?: number,"stop_reason"?: string | null,"tool_name"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "agent_steps_run_id_user_id_fkey"
+      columns: ["run_id","user_id"]
+isOneToOne: false
+      referencedRelation: "agent_runs"
+      referencedColumns: ["id","user_id"]
+    }
+                  ]
+                },"contacts": {
                   Row: {
                     "company": string | null,"created_at": string,"email": string | null,"full_name": string,"id": string,"notes": string | null,"preferred_language": string,"tier": string,"updated_at": string,"user_id": string
                   }
@@ -36,6 +70,38 @@ export type Database = {
                   }
                   Relationships: [
                     
+                  ]
+                },"drafts": {
+                  Row: {
+                    "body": string,"contact_id": string,"created_at": string,"id": string,"language": string,"rationale": string | null,"run_id": string | null,"status": string,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "body": string,"contact_id": string,"created_at"?: string,"id"?: string,"language": string,"rationale"?: string | null,"run_id"?: string | null,"status"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "body"?: string,"contact_id"?: string,"created_at"?: string,"id"?: string,"language"?: string,"rationale"?: string | null,"run_id"?: string | null,"status"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "drafts_contact_id_user_id_fkey"
+      columns: ["contact_id","user_id"]
+isOneToOne: false
+      referencedRelation: "contacts"
+      referencedColumns: ["id","user_id"]
+    },{
+      foreignKeyName: "drafts_contact_id_user_id_fkey"
+      columns: ["contact_id","user_id"]
+isOneToOne: false
+      referencedRelation: "contacts_with_last_interaction"
+      referencedColumns: ["id","user_id"]
+    },{
+      foreignKeyName: "drafts_run_id_user_id_fkey"
+      columns: ["run_id","user_id"]
+isOneToOne: false
+      referencedRelation: "agent_runs"
+      referencedColumns: ["id","user_id"]
+    }
                   ]
                 },"google_connections": {
                   Row: {

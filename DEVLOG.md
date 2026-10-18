@@ -1,5 +1,11 @@
 # Developer Log – Nudge Desk
 
+## October 17th, 2026
+
+### **Included** the agent database as a Supabase migration
+
+### **Conducted** RLS testing with a mutation check to verify a working RLS system
+
 ## October 13th, 2026
 
 ### **Integrated** Google calendar connections
