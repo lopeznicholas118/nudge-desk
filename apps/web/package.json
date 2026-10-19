@@ -11,6 +11,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@nudge/agent": "workspace:*",
     "@nudge/core": "workspace:*",
     "@nudge/db": "workspace:*",
     "@supabase/ssr": "^0.12.7",
