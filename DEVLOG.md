@@ -1,5 +1,11 @@
 # Developer Log – Nudge Desk
 
+## October 20th, 2026
+
+### **Displayed** the agent to the web server
+
+### **Ran** agent from dashboard and persisted traces
+
 ## October 19th, 2026
 
 ### **Added** Anthropic API integration

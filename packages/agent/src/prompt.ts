@@ -1,4 +1,4 @@
-import { sanitizeUntrusted } from "./untrusted";
+import {sanitizeUntrusted} from "./untrusted";
 
 /** Bump whenever the prompt or tool descriptions change. Stored on every run for evals. */
 export const PROMPT_VERSION = "v1";

@@ -6,6 +6,8 @@ import {NewContactSchema} from "@nudge/core";
 import {disconnectConnection} from "@/lib/google/connection";
 import {runCalendarSync} from "@/lib/google/sync";
 import {createClient} from "@/lib/supabase/server";
+import {runAgentForUser} from "@/lib/agent/run";
+import {describeError} from "@/lib/errors";
 
 async function requireUser() {
   const supabase = await createClient();
@@ -51,4 +53,17 @@ export async function disconnectGoogle() {
   const {user} = await requireUser();
   await disconnectConnection(user.id);
   revalidatePath("/dashboard");
+}
+
+export async function runAgentNow() {
+  const {supabase, user} = await requireUser();
+
+  const outcome = await runAgentForUser(supabase, user.id, "manual").catch((err: unknown) => {
+    console.error("agent run failed:", describeError(err));
+    return null;
+  });
+  if (!outcome) redirect("/dashboard?agent=failed");
+
+  revalidatePath("/dashboard");
+  redirect(`/dashboard?agent=${outcome.result.status}&drafts=${outcome.result.draftIds.length}`);
 }

@@ -9,6 +9,15 @@ const schema = z.object({
   TOKEN_ENCRYPTION_KEY: z.string().min(1),
 });
 
+const anthropicSchema = z.object({
+  ANTHROPIC_API_KEY: z.string().min(1),
+  ANTHROPIC_MODEL: z.string().min(1),
+});
+
 export function serverEnv() {
   return schema.parse(process.env);
+}
+
+export function anthropicEnv() {
+  return anthropicSchema.parse(process.env);
 }
