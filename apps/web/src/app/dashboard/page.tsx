@@ -3,7 +3,9 @@ import {getConnectionStatus} from "@/lib/google/connection";
 import type {SyncSummary} from "@/lib/google/sync";
 import {createClient} from "@/lib/supabase/server";
 import {signOut} from "../login/actions";
-import {addContact, disconnectGoogle, syncCalendar} from "./actions";
+import {addContact, disconnectGoogle, runAgentNow, syncCalendar} from "./actions";
+
+export const maxDuration = 60;
 
 const MESSAGES: Record<string, string> = {
   "google:connected": "Google Calendar connected.",
@@ -28,16 +30,35 @@ export default async function Dashboard({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [connection, contacts] = await Promise.all([
+  const [connection, contacts, drafts] = await Promise.all([
     getConnectionStatus(user.id),
     supabase
       .from("contacts_with_last_interaction")
       .select("id, full_name, email, tier, last_interaction_at")
       .order("full_name"),
+    supabase
+    .from("drafts")
+    .select("id, contact_id, language, body, rationale")
+    .eq("status", "pending")
+    .order("created_at", {ascending: false})
   ]);
+  const nameById = new Map((contacts.data ?? []).map((c) => [c.id, c.full_name]));
 
-  const banner =
-    params.error ?? MESSAGES[`google:${params.google}`] ?? MESSAGES[`sync:${params.sync}`];
+const agentBanner =
+  params.agent === "completed"
+    ? `Agent finished: ${params.drafts ?? 0} draft(s) ready for review.`
+    : params.agent === "failed"
+      ? "The agent run failed. Check the server logs."
+      : params.agent
+        ? `Agent stopped early (${params.agent}). Partial results may be saved.`
+        : undefined;
+
+const banner =
+  params.error ??
+  MESSAGES[`google:${params.google}`] ??
+  MESSAGES[`sync:${params.sync}`] ??
+  agentBanner;
+
   const summary = connection?.last_sync_summary as SyncSummary | null;
   const input = "rounded border border-gray-300 px-3 py-2 text-white";
   const button = "rounded border border-gray-400 px-3 py-2";
@@ -87,6 +108,28 @@ export default async function Dashboard({
             )}
           </div>
         )}
+      </section>
+
+      <section className="space-y-3">
+          <h2 className="text-lg font-semibold">Agent</h2>
+            <form action={runAgentNow}>
+              <button className={button}>Run agent</button>
+            </form>
+            <p className="text-sm text-gray-500">
+          Drafts the people you&apos;re most overdue to contact. Nothing is ever sent.
+            </p>
+            {drafts.data?.length === 0 && <p className="text-gray-500">No drafts waiting for review.</p>}
+            <ul className="space-y-3">
+              {drafts.data?.map((d) => (
+                <li key={d.id} className="rounded border border-gray-300 p-3">
+                  <p className="text-sm font-semibold">
+                    {nameById.get(d.contact_id) ?? "Unknown"} <span className="font-normal text-gray-500">({d.language})</span>
+                  </p>
+                  <p className="mt-1 whitespace-pre-wrap">{d.body}</p>
+                {d.rationale && <p className="mt-2 text-sm text-gray-500">Why: {d.rationale}</p>}
+                </li>
+              ))}
+            </ul>
       </section>
 
       <section className="space-y-3">
