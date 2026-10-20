@@ -1,30 +1,34 @@
 ## What changed
 
-Incorporated the Anthropic Claude agent
+Displayed the agent on the dashboard
 
-Tested agent tools and loop output
-
-Mutated `tools.ts` to verify security system of agent tests
+Ran the agent from the dashboard to display drafts of messages
 
 ## Why
 
-The agent, Nudge, must be included to serve as a personal network assistant to the user.
-Agent tools must be tested to verify agent output is correct.
-The mutation of `tools.ts` is necessary to validate a working security system.
+The user must access the agent on the dashboard.
+Running the agent from the dashboard displays drafts of potential messages to be sent to overdue contacts.
 
 ## How I tested
 - [x] `pnpm typecheck`
-- [x] `pnpm --filter @nudge/agent test`
+- [x] `pnpm lint`
+- [x] `pnpm test`
+- [x] `pnpm build`
+- [x] `pnpm dev`
 - [x] `supabase status`
 
-I implemented tests in `tools.test.ts` and `agent.test.ts` to verify the correct agent output regarding its functionality.
-I also mutated line 181 of `tools.ts`, removing the if statement so that the "rejects a language that doesn't match the contact" test would fail.
+All tests passed.
+I reviewed the agent's functionality on the dashboard, ensuring that Spanish contacts have a draft message in Spanish and that, once all drafts have been created and showcased on the dashboard, no drafts are left to be created.
 
 ## Notes / screenshots
 
-<img width="563" height="180" alt="All 31/31 tests passed" src="https://github.com/user-attachments/assets/c1e5ae64-afa3-4c4d-91e2-f07a1b830e03" />
-<img width="673" height="369" alt="Mutation language test failed" src="https://github.com/user-attachments/assets/469cc29c-15bb-4324-a4a3-154d06dc6cd3" />
-<img width="509" height="124" alt="Tests failed after mutation" src="https://github.com/user-attachments/assets/d0b22c50-8de3-46f8-af27-2b37b175c09b" />
+<img width="437" height="291" alt="pnpm build" src="https://github.com/user-attachments/assets/c409ae71-ed53-4d58-833c-2212f7317ab7" />
+<img width="533" height="111" alt="Tests passed – nudge and calendar" src="https://github.com/user-attachments/assets/67163181-1d87-4c59-b7c2-2684ab45823e" />
+<img width="519" height="114" alt="Tests passed – agent and tools" src="https://github.com/user-attachments/assets/a07acf27-b4cf-4b70-b981-d7206e4739bf" />
+<img width="562" height="100" alt="Crypto (Encryption) tests passed" src="https://github.com/user-attachments/assets/fd300267-2111-4c79-809b-51ec88bcd865" />
+<img width="686" height="636" alt="Agent drafts" src="https://github.com/user-attachments/assets/42c6e41e-5003-48e4-814d-9bd1a57bf2dd" />
+<img width="666" height="207" alt="Contact list" src="https://github.com/user-attachments/assets/6d328de9-37de-40a7-ba8a-de24934a3569" />
+
 
 
 
