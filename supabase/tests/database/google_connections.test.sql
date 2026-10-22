@@ -23,8 +23,9 @@ select throws_ok(
 select throws_ok(
   $$ insert into public.google_connections (user_id, google_email, scopes, refresh_token_encrypted)
      values ('11111111-1111-1111-1111-111111111111', 'x@gmail.com', array['a'], 'v1:x:y:z') $$,
-  '42501', null,
-  'a signed-in user cannot insert connections'
+  '42501',
+  'permission denied for table google_connections',
+  'a signed-in user cannot insert connections (no INSERT privilege)'
 );
 
 reset role;
