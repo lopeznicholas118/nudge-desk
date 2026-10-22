@@ -143,6 +143,32 @@ isOneToOne: false
       referencedColumns: ["id","user_id"]
     }
                   ]
+                },"nudges": {
+                  Row: {
+                    "contact_id": string,"created_at": string,"id": string,"reason": string,"score": number,"state": string,"status": string,"updated_at": string,"user_id": string,"week_start": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "contact_id": string,"created_at"?: string,"id"?: string,"reason": string,"score": number,"state"?: string,"status": string,"updated_at"?: string,"user_id"?: string,"week_start": string
+                  }
+                  Update: {
+                    "contact_id"?: string,"created_at"?: string,"id"?: string,"reason"?: string,"score"?: number,"state"?: string,"status"?: string,"updated_at"?: string,"user_id"?: string,"week_start"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "nudges_contact_id_user_id_fkey"
+      columns: ["contact_id","user_id"]
+isOneToOne: false
+      referencedRelation: "contacts"
+      referencedColumns: ["id","user_id"]
+    },{
+      foreignKeyName: "nudges_contact_id_user_id_fkey"
+      columns: ["contact_id","user_id"]
+isOneToOne: false
+      referencedRelation: "contacts_with_last_interaction"
+      referencedColumns: ["id","user_id"]
+    }
+                  ]
                 }
           }
           Views: {
@@ -157,7 +183,11 @@ isOneToOne: false
                 }
           }
           Functions: {
-            [_ in never]: never
+            "users_with_contacts":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "user_id": string
+            }[]
+                           }
           }
           Enums: {
             [_ in never]: never
