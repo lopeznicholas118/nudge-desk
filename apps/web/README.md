@@ -9,9 +9,22 @@ When it is completed and deployed, the deployment link will be available.
 
 Testing-mode OAuth apps are limited to test users, and Google expires refresh tokens for them after about 7 days.
 
+Weeks are UTC ISO weeks (Monday start)
+
+### Known limitations:
+
+Events in the past that are later cancelled or deleted aren’t removed. Only the upcoming window is refreshed wholesale. 
+Upserts keep past data stable and idempotent.
+
 ### Out of scope for v1:
 
 No Gmail – its scopes are restricted and require a costly security review.
+
+### What I'd do next:
+
+Fan out one queued job per user instead of having a duration limit for starting new users after about 25 seconds.
+
+
 
 ---------------------------------------------------------------
 
