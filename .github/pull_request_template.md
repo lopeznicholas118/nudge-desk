@@ -1,34 +1,30 @@
 ## What changed
 
-Displayed the agent on the dashboard
+Integrated the nudges database
 
-Ran the agent from the dashboard to display drafts of messages
+Added RLS and constraint tests
+
+Mutated database to verify RLS layer tests and security system
 
 ## Why
 
-The user must access the agent on the dashboard.
-Running the agent from the dashboard displays drafts of potential messages to be sent to overdue contacts.
+The nudges database sets up the daily cron which generates nudges idempotently.
+The RLS and constraint tests must verify that there are no silent bypasses to the security system.
+Mutating the database verifies RLS to ensure that INSERT is flagged correctly.
 
 ## How I tested
-- [x] `pnpm typecheck`
-- [x] `pnpm lint`
-- [x] `pnpm test`
-- [x] `pnpm build`
-- [x] `pnpm dev`
-- [x] `supabase status`
+- [x] `supabase test db`
 
-All tests passed.
-I reviewed the agent's functionality on the dashboard, ensuring that Spanish contacts have a draft message in Spanish and that, once all drafts have been created and showcased on the dashboard, no drafts are left to be created.
+All 39/39 tests passed.
+I mutated the database in the SQL studio using the command `grant insert on public.nudges to authenticated`. Initially, all tests kept passing, so I troubleshot with Claude and the solution was to declare the message type explicitly (no INSERT privilege) inside of the sql check in the `nudges.test.sql` file. Then, the command led to the failure of the `signed-in users cannot create nudges` test as intended. Revoking the command led to the tests passing again. I then re-edited `google-connections.test.sql` to include the fix. See screenshots below.
 
 ## Notes / screenshots
 
-<img width="437" height="291" alt="pnpm build" src="https://github.com/user-attachments/assets/c409ae71-ed53-4d58-833c-2212f7317ab7" />
-<img width="533" height="111" alt="Tests passed – nudge and calendar" src="https://github.com/user-attachments/assets/67163181-1d87-4c59-b7c2-2684ab45823e" />
-<img width="519" height="114" alt="Tests passed – agent and tools" src="https://github.com/user-attachments/assets/a07acf27-b4cf-4b70-b981-d7206e4739bf" />
-<img width="562" height="100" alt="Crypto (Encryption) tests passed" src="https://github.com/user-attachments/assets/fd300267-2111-4c79-809b-51ec88bcd865" />
-<img width="686" height="636" alt="Agent drafts" src="https://github.com/user-attachments/assets/42c6e41e-5003-48e4-814d-9bd1a57bf2dd" />
-<img width="666" height="207" alt="Contact list" src="https://github.com/user-attachments/assets/6d328de9-37de-40a7-ba8a-de24934a3569" />
-
+<img width="685" height="40" alt="All tests passed" src="https://github.com/user-attachments/assets/9c181e37-70b3-408c-be0c-5a6ae9e86682" />
+<img width="640" height="85" alt="Nudges test failed" src="https://github.com/user-attachments/assets/b00e3fda-e3bb-41f3-87a7-961343906393" />
+<img width="620" height="71" alt="signed-in users cannot create nudges test failed after mutating" src="https://github.com/user-attachments/assets/d969a603-7e23-4c23-bc0d-a6ed94f4711e" />
+<img width="665" height="70" alt="Google connections tests failed" src="https://github.com/user-attachments/assets/fc2ed016-3bc7-49a1-9b42-1d43960e086c" />
+<img width="687" height="69" alt="Google connections test (no INSERT privilege) failed after mutating" src="https://github.com/user-attachments/assets/69931fa6-4b77-43a9-835f-1f61d1d35fe4" />
 
 
 
