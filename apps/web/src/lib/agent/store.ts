@@ -2,10 +2,7 @@ import "server-only";
 import {z} from "zod";
 import {LanguageSchema, TierSchema} from "@nudge/core";
 import type {AgentStore} from "@nudge/agent";
-import type {createClient} from "@/lib/supabase/server";
-
-// Same pattern as sync.ts. Step 6 widens this so the cron job can pass its own client.
-type UserClient = Awaited<ReturnType<typeof createClient>>;
+import type {DbClient} from "@nudge/db";
 
 const SummaryRow = z.object({
   id: z.uuid(),
@@ -21,7 +18,7 @@ const DetailRow = SummaryRow.extend({
 
 const toDate = (value: string | null) => (value === null ? null : new Date(value));
 
-export function createSupabaseStore(supabase: UserClient, userId: string): AgentStore {
+export function createSupabaseStore(supabase: DbClient, userId: string): AgentStore {
   // Every query filters by user_id explicitly, on top of RLS (defense in depth).
   return {
     async listContacts() {

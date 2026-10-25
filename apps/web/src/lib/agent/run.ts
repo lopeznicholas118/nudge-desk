@@ -1,12 +1,9 @@
 import "server-only";
 import {createAnthropicLlm, PROMPT_VERSION, runAgent, type AgentResult, type TraceStep} from "@nudge/agent";
-import type {Json} from "@nudge/db";
+import type {DbClient, Json} from "@nudge/db";
 import {anthropicEnv} from "@/lib/env.server";
 import {describeError} from "@/lib/errors";
-import type {createClient} from "@/lib/supabase/server";
 import {createSupabaseStore} from "./store";
-
-type UserClient = Awaited<ReturnType<typeof createClient>>;
 
 const MAX_STORED_CHARS = 4000;
 const clip = (text: string) => (text.length > MAX_STORED_CHARS ? text.slice(0, MAX_STORED_CHARS) + "…" : text);
@@ -35,7 +32,7 @@ function toStepRow(runId: string, userId: string, s: TraceStep) {
 }
 
 export async function runAgentForUser(
-  supabase: UserClient,
+  supabase: DbClient,
   userId: string,
   triggeredBy: "manual" | "cron",
 ): Promise<{ runId: string; result: AgentResult }> {
