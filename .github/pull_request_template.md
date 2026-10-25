@@ -1,30 +1,25 @@
 ## What changed
 
-Integrated the nudges database
+Added ISO week math with nudge planning tests
 
-Added RLS and constraint tests
-
-Mutated database to verify RLS layer tests and security system
+Made service-role paths user-scoped, with one client type working everywhere
 
 ## Why
 
-The nudges database sets up the daily cron which generates nudges idempotently.
-The RLS and constraint tests must verify that there are no silent bypasses to the security system.
-Mutating the database verifies RLS to ensure that INSERT is flagged correctly.
+The nudge assistant needs to know when contacts are overdue so that the agent can alert the user, hence the ISO week math (starting Monday).
+Admin and user's session client must be passed in as Supabase clients typed on the same database.
 
 ## How I tested
-- [x] `supabase test db`
+- [x] `pnpm --filter @nudge/core test`
+- [x] `pnpm typecheck`
 
-All 39/39 tests passed.
-I mutated the database in the SQL studio using the command `grant insert on public.nudges to authenticated`. Initially, all tests kept passing, so I troubleshot with Claude and the solution was to declare the message type explicitly (no INSERT privilege) inside of the sql check in the `nudges.test.sql` file. Then, the command led to the failure of the `signed-in users cannot create nudges` test as intended. Revoking the command led to the tests passing again. I then re-edited `google-connections.test.sql` to include the fix. See screenshots below.
+All 49/49 nudge planning tests passed.
+After changing service-role paths to be client-scoped, I ran into a DbClient error where I had to return the DbClient in `server.ts` after troubleshooting with Claude.
 
 ## Notes / screenshots
 
-<img width="685" height="40" alt="All tests passed" src="https://github.com/user-attachments/assets/9c181e37-70b3-408c-be0c-5a6ae9e86682" />
-<img width="640" height="85" alt="Nudges test failed" src="https://github.com/user-attachments/assets/b00e3fda-e3bb-41f3-87a7-961343906393" />
-<img width="620" height="71" alt="signed-in users cannot create nudges test failed after mutating" src="https://github.com/user-attachments/assets/d969a603-7e23-4c23-bc0d-a6ed94f4711e" />
-<img width="665" height="70" alt="Google connections tests failed" src="https://github.com/user-attachments/assets/fc2ed016-3bc7-49a1-9b42-1d43960e086c" />
-<img width="687" height="69" alt="Google connections test (no INSERT privilege) failed after mutating" src="https://github.com/user-attachments/assets/69931fa6-4b77-43a9-835f-1f61d1d35fe4" />
-
+<img width="517" height="171" alt="nudge planning tests passed" src="https://github.com/user-attachments/assets/b284d4c2-96f2-489e-b761-94d8fd439422" />
+<img width="719" height="72" alt="failed typecheck from DbClient error" src="https://github.com/user-attachments/assets/a54c4921-cec2-46b4-a6a2-88288df7a322" />
+<img width="302" height="154" alt="typecheck pass" src="https://github.com/user-attachments/assets/ad58e2b9-8afd-49ae-8f5b-aa99c14ba4ae" />
 
 
