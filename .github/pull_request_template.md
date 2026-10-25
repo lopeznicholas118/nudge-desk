@@ -23,5 +23,3 @@ After changing service-role paths to be client-scoped, I ran into a DbClient err
 <img width="302" height="154" alt="typecheck pass" src="https://github.com/user-attachments/assets/ad58e2b9-8afd-49ae-8f5b-aa99c14ba4ae" />
 
 
-
-

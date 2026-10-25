@@ -1,5 +1,19 @@
 # Developer Log – Nudge Desk
 
+## October 24th, 2026
+
+### **Incorporated** ISO week math and nudge planning, including week boundaries
+
+### **Tested** nudge plan and when contacts are overdue with a 49/49 pass rate
+
+### **Made** service-role code paths user-scoped
+
+### **Configured** one client type everywhere
+
+### **Extracted** the database half of calendar sync
+
+### **Troubleshot** `DbClient` error with same versions of `@supabase/supabase-js`
+
 ## October 22nd, 2026
 
 ### **Integrated** supabase migration for nudges with UTC ISO weeks

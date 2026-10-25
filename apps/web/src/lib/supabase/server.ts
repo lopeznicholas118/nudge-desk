@@ -3,6 +3,7 @@ import {createServerClient} from "@supabase/ssr";
 import {cookies} from "next/headers";
 import type {Database} from "@nudge/db";
 import {publicEnv} from "@/lib/env";
+import type {DbClient} from "@nudge/db"
 
 /** A Supabase client acting as the signed-in user (RLS applies). */
 export async function createClient() {
@@ -26,5 +27,5 @@ export async function createClient() {
         },
       },
     },
-  );
+  ) as unknown as DbClient;
 }
