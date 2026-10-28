@@ -9,6 +9,6 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.117.3"
+    "@supabase/supabase-js": "2.117.3"
   }
 }
