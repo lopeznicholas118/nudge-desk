@@ -1,5 +1,11 @@
 # Developer Log – Nudge Desk
 
+## October 29th, 2026
+
+### **Added** integration tests against local Supabase
+
+### **Integrated** isolation tests
+
 ## October 28th, 2026
 
 ### **Incorporated** the environment cron secret code with the agent off to test cron runs
