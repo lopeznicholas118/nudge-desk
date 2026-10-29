@@ -14,7 +14,8 @@
     "format": "prettier --write .",
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
-    "db:types": "supabase gen types typescript --local > packages/db/src/database.types.ts"
+    "db:types": "supabase gen types typescript --local > packages/db/src/database.types.ts",
+    "test:integration": "pnpm --filter @nudge/web test:integration"
   },
   "devDependencies": {
     "@types/node": "^26.6.4",
