@@ -4,7 +4,9 @@
 
 ### **Added** integration tests against local Supabase
 
-### **Integrated** isolation tests
+### **Integrated** isolation tests with a mutation
+
+### **Implemented** agent with nudge creation
 
 ## October 28th, 2026
 
