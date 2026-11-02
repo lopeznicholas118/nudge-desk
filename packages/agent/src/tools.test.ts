@@ -57,6 +57,16 @@ describe("list_overdue_contacts", () => {
     const out = await run("list_overdue_contacts", {}, ctx);
     expect(out.contacts.map((c: { contact_id: string }) => c.contact_id)).toEqual([ID.alex, ID.maria]);
   });
+
+  it("also leaves out contacts whose draft was approved but not yet sent", async () => {
+    const store = fixtureStore(NOW);
+    const ctx = makeCtx({ store });
+    await run("save_draft", draft(), ctx);
+    store.drafts[0]!.status = "approved";
+
+    const out = await run("list_overdue_contacts", {}, ctx);
+    expect(out.contacts.map((c: { contact_id: string }) => c.contact_id)).toEqual([ID.alex, ID.maria]);
+  });
 });
 
 describe("get_contact_context", () => {

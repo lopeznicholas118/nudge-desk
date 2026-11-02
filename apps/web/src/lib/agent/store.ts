@@ -100,12 +100,12 @@ export function createSupabaseStore(supabase: DbClient, userId: string): AgentSt
       });
     },
 
-    async listPendingDraftContactIds() {
+    async listOpenDraftContactIds() {
       const { data, error } = await supabase
         .from("drafts")
         .select("contact_id")
         .eq("user_id", userId)
-        .eq("status", "pending");
+        .in("status", ["pending", "approved"]);
       if (error) throw error;
       return (data ?? []).map((r) => r.contact_id);
     },

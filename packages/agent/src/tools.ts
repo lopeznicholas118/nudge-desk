@@ -67,7 +67,7 @@ const listOverdueContacts = defineTool({
   async run({ limit }, ctx) {
     const [contacts, pending] = await Promise.all([
       ctx.store.listContacts(),
-      ctx.store.listPendingDraftContactIds(),
+      ctx.store.listOpenDraftContactIds(),
     ]);
     const skip = new Set(pending);
     const candidates = contacts.filter((c) => !skip.has(c.id));

@@ -77,8 +77,10 @@ export class InMemoryStore implements AgentStore {
       });
   }
 
-  async listPendingDraftContactIds(): Promise<string[]> {
-    return this.drafts.filter((d) => d.status === "pending").map((d) => d.contactId);
+  async listOpenDraftContactIds(): Promise<string[]> {
+    return this.drafts
+      .filter((d) => d.status === "pending" || d.status === "approved")
+      .map((d) => d.contactId);
   }
 
   async insertDraft(draft: NewDraft): Promise<InsertDraftResult> {
