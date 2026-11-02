@@ -73,14 +73,14 @@ isOneToOne: false
                   ]
                 },"drafts": {
                   Row: {
-                    "body": string,"contact_id": string,"created_at": string,"id": string,"language": string,"rationale": string | null,"run_id": string | null,"status": string,"updated_at": string,"user_id": string
+                    "alt_body": string | null,"alt_language": string | null,"approved_at": string | null,"body": string,"contact_id": string,"created_at": string,"id": string,"language": string,"original_body": string | null,"rationale": string | null,"run_id": string | null,"sent_at": string | null,"status": string,"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "body": string,"contact_id": string,"created_at"?: string,"id"?: string,"language": string,"rationale"?: string | null,"run_id"?: string | null,"status"?: string,"updated_at"?: string,"user_id"?: string
+                    "alt_body"?: string | null,"alt_language"?: string | null,"approved_at"?: string | null,"body": string,"contact_id": string,"created_at"?: string,"id"?: string,"language": string,"original_body"?: string | null,"rationale"?: string | null,"run_id"?: string | null,"sent_at"?: string | null,"status"?: string,"updated_at"?: string,"user_id"?: string
                   }
                   Update: {
-                    "body"?: string,"contact_id"?: string,"created_at"?: string,"id"?: string,"language"?: string,"rationale"?: string | null,"run_id"?: string | null,"status"?: string,"updated_at"?: string,"user_id"?: string
+                    "alt_body"?: string | null,"alt_language"?: string | null,"approved_at"?: string | null,"body"?: string,"contact_id"?: string,"created_at"?: string,"id"?: string,"language"?: string,"original_body"?: string | null,"rationale"?: string | null,"run_id"?: string | null,"sent_at"?: string | null,"status"?: string,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -183,7 +183,10 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "users_with_contacts":
+            "mark_draft_sent":
+{ Args: { "p_draft_id": string }; Returns: undefined
+                           },
+"users_with_contacts":
 { Args: Record<PropertyKey, never>; Returns: {
               "user_id": string
             }[]
