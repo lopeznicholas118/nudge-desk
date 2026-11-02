@@ -1,5 +1,15 @@
 # Developer Log – Nudge Desk
 
+## November 1st, 2026
+
+## **Included** draft review states, original_body tracking, and mark_draft_sent
+
+## **Tested** RLS privilege with mutation checks
+
+## **Added** draft body validation and EN/ES translation planning
+
+## **Treated** approved drafts as open
+
 ## October 29th, 2026
 
 ### **Added** integration tests against local Supabase

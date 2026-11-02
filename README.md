@@ -23,3 +23,7 @@ No Gmail – its scopes are restricted and require a costly security review.
 ### What I'd do next:
 
 Fan out one queued job per user instead of having a duration limit for starting new users after about 25 seconds.
+Add translation that is rate-limited or metered and logged to agent_runs.
+As of now, open nudges from past weeks stay open in the database and are simply hidden. An expiry job would tidy them.
+Older banners still display arbitrary text from the URL. The new actions use codes, and a cookie-based flash message would be the proper fix.
+Add database-level state machine for drafts beyond the query guards and the function.

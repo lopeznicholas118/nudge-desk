@@ -12,11 +12,15 @@ export function createAnthropicLlm(opts: { apiKey: string; model: string }): Llm
         max_tokens: req.maxTokens,
         system: req.system,
         messages: req.messages as Anthropic.MessageParam[],
-        tools: req.tools.map((t) => ({
-          name: t.name,
-          description: t.description,
-          input_schema: t.inputSchema as Anthropic.Tool["input_schema"],
-        })),
+        ...(req.tools.length > 0
+          ? {
+              tools: req.tools.map((t) => ({
+                name: t.name,
+                description: t.description,
+                input_schema: t.inputSchema as Anthropic.Tool["input_schema"],
+              }))
+            }
+          : {})
       });
 
       // Normalize: keep only the block types and fields we use.
@@ -32,6 +36,6 @@ export function createAnthropicLlm(opts: { apiKey: string; model: string }): Llm
         stopReason: res.stop_reason,
         usage: { inputTokens: res.usage.input_tokens, outputTokens: res.usage.output_tokens },
       };
-    },
+    }
   };
 }

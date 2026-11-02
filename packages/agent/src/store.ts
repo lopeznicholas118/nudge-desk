@@ -45,6 +45,7 @@ export interface AgentStore {
   /** Most recent first. Includes future-dated interactions (upcoming meetings). */
   listInteractions(contactId: string, limit: number): Promise<InteractionRecord[]>;
   listUpcomingMeetings(from: Date, to: Date): Promise<UpcomingMeeting[]>;
-  listPendingDraftContactIds(): Promise<string[]>;
+  /** Contacts that already have an unsent draft: pending review, or approved but not yet sent. */
+  listOpenDraftContactIds(): Promise<string[]>;
   insertDraft(draft: NewDraft): Promise<InsertDraftResult>;
 }
