@@ -1,5 +1,11 @@
 # Developer Log – Nudge Desk
 
+## November 2nd, 2026
+
+### **Integrated** server actions with one shared `requireUser`
+
+### **Added** review actions
+
 ## November 1st, 2026
 
 ## **Included** draft review states, original_body tracking, and mark_draft_sent
