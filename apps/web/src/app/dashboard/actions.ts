@@ -5,18 +5,9 @@ import {redirect} from "next/navigation";
 import {NewContactSchema} from "@nudge/core";
 import {disconnectConnection} from "@/lib/google/connection";
 import {runCalendarSync} from "@/lib/google/sync";
-import {createClient} from "@/lib/supabase/server";
+import {requireUser} from "@/lib/auth";
 import {runAgentForUser} from "@/lib/agent/run";
 import {describeError} from "@/lib/errors";
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: {user},
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-  return {supabase, user};
-}
 
 const back = (key: string, value: string) => `/dashboard?${key}=${encodeURIComponent(value)}`;
 
