@@ -1,9 +1,13 @@
-import {redirect} from "next/navigation";
-import {getConnectionStatus} from "@/lib/google/connection";
-import type {SyncSummary} from "@/lib/google/sync";
-import {createClient} from "@/lib/supabase/server";
-import {signOut} from "../login/actions";
-import {addContact, disconnectGoogle, runAgentNow, syncCalendar} from "./actions";
+import { weekStart } from "@nudge/core";
+import { requireUser } from "@/lib/auth";
+import { getConnectionStatus } from "@/lib/google/connection";
+import type { SyncSummary } from "@/lib/google/sync";
+import { signOut } from "../login/actions";
+import { addContact, disconnectGoogle, runAgentNow, syncCalendar } from "./actions";
+import { ApprovedCard } from "./_components/approved-card";
+import { DraftCard } from "./_components/draft-card";
+import { NudgeList, type NudgeView } from "./_components/nudge-list";
+import { ui } from "./_components/ui";
 
 export const maxDuration = 60;
 
@@ -16,6 +20,16 @@ const MESSAGES: Record<string, string> = {
   "sync:failed": "Sync failed. Check the server logs.",
   "sync:needs_reauth": "Google access expired. Please reconnect.",
   "sync:not_connected": "Connect Google Calendar first.",
+  "flash:draft_saved": "Draft saved.",
+  "flash:draft_translated": "Translated. Use the toggle to switch back without translating again.",
+  "flash:draft_approved": "Approved. Copy it or open it in your email app, then press “I sent it”.",
+  "flash:draft_discarded": "Draft discarded.",
+  "flash:draft_sent": "Marked as sent. That contact is now caught up.",
+  "flash:draft_missing": "That draft is no longer waiting for you.",
+  "flash:draft_invalid": "Drafts need between 10 and 2000 characters.",
+  "flash:nudge_dismissed": "Nudge dismissed.",
+  "flash:nudge_missing": "That nudge is no longer open.",
+  "flash:failed": "Something went wrong. Check the server logs.",
 };
 
 export default async function Dashboard({
@@ -24,44 +38,59 @@ export default async function Dashboard({
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const params = await searchParams;
-  const supabase = await createClient();
-  const {
-    data: {user},
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const { supabase, user } = await requireUser();
 
-  const [connection, contacts, drafts] = await Promise.all([
+  const [connection, contacts, drafts, nudges] = await Promise.all([
     getConnectionStatus(user.id),
     supabase
       .from("contacts_with_last_interaction")
       .select("id, full_name, email, tier, last_interaction_at")
       .order("full_name"),
     supabase
-    .from("drafts")
-    .select("id, contact_id, language, body, rationale")
-    .eq("status", "pending")
-    .order("created_at", {ascending: false})
+      .from("drafts")
+      .select("id, contact_id, status, language, alt_language, body, rationale")
+      .in("status", ["pending", "approved"])
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("nudges")
+      .select("id, contact_id, reason")
+      .eq("state", "open")
+      .eq("week_start", weekStart(new Date()))
+      .order("score", { ascending: false }),
   ]);
-  const nameById = new Map((contacts.data ?? []).map((c) => [c.id, c.full_name]));
 
-const agentBanner =
-  params.agent === "completed"
-    ? `Agent finished: ${params.drafts ?? 0} draft(s) ready for review.`
-    : params.agent === "failed"
-      ? "The agent run failed. Check the server logs."
-      : params.agent
-        ? `Agent stopped early (${params.agent}). Partial results may be saved.`
-        : undefined;
+  const contactsById = new Map((contacts.data ?? []).map((c) => [c.id, c]));
+  const pending = (drafts.data ?? []).filter((d) => d.status === "pending");
+  const approved = (drafts.data ?? []).filter((d) => d.status === "approved");
+  const withOpenDraft = new Set((drafts.data ?? []).map((d) => d.contact_id));
 
-const banner =
-  params.error ??
-  MESSAGES[`google:${params.google}`] ??
-  MESSAGES[`sync:${params.sync}`] ??
-  agentBanner;
+  const nudgeViews: NudgeView[] = (nudges.data ?? []).map((n) => {
+    const c = contactsById.get(n.contact_id);
+    return {
+      id: n.id,
+      name: c?.full_name ?? "Unknown",
+      tier: c?.tier ?? "",
+      reason: n.reason,
+      hasDraft: withOpenDraft.has(n.contact_id),
+    };
+  });
 
+  const agentBanner =
+    params.agent === "completed"
+      ? `Agent finished: ${params.drafts ?? 0} draft(s) ready for review.`
+      : params.agent === "failed"
+        ? "The agent run failed. Check the server logs."
+        : params.agent
+          ? `Agent stopped early (${params.agent}). Partial results may be saved.`
+          : undefined;
+
+  const banner =
+    params.error ??
+    MESSAGES[`google:${params.google}`] ??
+    MESSAGES[`sync:${params.sync}`] ??
+    MESSAGES[`flash:${params.flash}`] ??
+    agentBanner;
   const summary = connection?.last_sync_summary as SyncSummary | null;
-  const input = "rounded border border-gray-300 px-3 py-2 text-white";
-  const button = "rounded border border-gray-400 px-3 py-2";
 
   return (
     <main className="mx-auto max-w-2xl space-y-8 p-8">
@@ -71,7 +100,7 @@ const banner =
           <p className="text-sm text-gray-500">Signed in as {user.email}</p>
         </div>
         <form action={signOut}>
-          <button className={button}>Sign out</button>
+          <button className={ui.button}>Sign out</button>
         </form>
       </header>
 
@@ -79,7 +108,7 @@ const banner =
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Google Calendar</h2>
-        {!connection && <a href="/api/google/connect" className={`${button} inline-block`}>Connect Google Calendar</a>}
+        {!connection && <a href="/api/google/connect" className={`${ui.button} inline-block`}>Connect Google Calendar</a>}
         {connection?.status === "needs_reauth" && (
           <p>
             Access expired. <a className="underline" href="/api/google/connect">Reconnect</a>
@@ -92,8 +121,8 @@ const banner =
               {connection.last_synced_at && ` · last synced ${new Date(connection.last_synced_at).toLocaleString("en-US")}`}
             </p>
             <div className="flex gap-3">
-              <form action={syncCalendar}><button className={button}>Sync now</button></form>
-              <form action={disconnectGoogle}><button className={button}>Disconnect</button></form>
+              <form action={syncCalendar}><button className={ui.button}>Sync now</button></form>
+              <form action={disconnectGoogle}><button className={ui.button}>Disconnect</button></form>
             </div>
           </>
         )}
@@ -111,38 +140,63 @@ const banner =
       </section>
 
       <section className="space-y-3">
-          <h2 className="text-lg font-semibold">Agent</h2>
-            <form action={runAgentNow}>
-              <button className={button}>Run agent</button>
-            </form>
-            <p className="text-sm text-gray-500">
+        <h2 className="text-lg font-semibold">Agent</h2>
+        <form action={runAgentNow}>
+          <button className={ui.button}>Run agent</button>
+        </form>
+        <p className="text-sm text-gray-500">
           Drafts the people you&apos;re most overdue to contact. Nothing is ever sent.
-            </p>
-            {drafts.data?.length === 0 && <p className="text-gray-500">No drafts waiting for review.</p>}
-            <ul className="space-y-3">
-              {drafts.data?.map((d) => (
-                <li key={d.id} className="rounded border border-gray-300 p-3">
-                  <p className="text-sm font-semibold">
-                    {nameById.get(d.contact_id) ?? "Unknown"} <span className="font-normal text-gray-500">({d.language})</span>
-                  </p>
-                  <p className="mt-1 whitespace-pre-wrap">{d.body}</p>
-                {d.rationale && <p className="mt-2 text-sm text-gray-500">Why: {d.rationale}</p>}
-                </li>
-              ))}
-            </ul>
+        </p>
       </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">This week&apos;s nudges</h2>
+        <NudgeList nudges={nudgeViews} />
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-lg font-semibold">Drafts to review</h2>
+        {pending.length === 0 && <p className="text-gray-500">No drafts waiting for review.</p>}
+        <ul className="space-y-3">
+          {pending.map((d) => (
+            <DraftCard key={d.id} draft={d} contactName={contactsById.get(d.contact_id)?.full_name ?? "Unknown"} />
+          ))}
+        </ul>
+      </section>
+
+      {approved.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold">Ready to send</h2>
+          <p className="text-sm text-gray-500">
+            Nudge Desk never sends for you. Send these yourself, then press &ldquo;I sent it&rdquo;.
+          </p>
+          <ul className="space-y-3">
+            {approved.map((d) => {
+              const c = contactsById.get(d.contact_id);
+              return (
+                <ApprovedCard
+                  key={d.id}
+                  draft={d}
+                  contactName={c?.full_name ?? "Unknown"}
+                  contactEmail={c?.email ?? null}
+                />
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Add a contact</h2>
         <form action={addContact} className="flex flex-wrap gap-2">
-          <input className={input} name="full_name" placeholder="Full name" required />
-          <input className={input} name="email" type="email" placeholder="Email (matches calendar)" />
-          <select className={input} name="tier" defaultValue="warm">
+          <input className={ui.input} name="full_name" placeholder="Full name" required />
+          <input className={ui.input} name="email" type="email" placeholder="Email (matches calendar)" />
+          <select className={ui.input} name="tier" defaultValue="warm">
             <option value="close">close</option>
             <option value="warm">warm</option>
             <option value="weak">weak</option>
           </select>
-          <button className={button}>Add</button>
+          <button className={ui.button}>Add</button>
         </form>
       </section>
 
