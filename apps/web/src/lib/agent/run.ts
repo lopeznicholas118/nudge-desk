@@ -14,7 +14,11 @@ function toStepRow(runId: string, userId: string, s: TraceStep) {
     return {
       ...base,
       kind: "llm" as const,
+      tool_name: null,
+      input: null,
       output: clip(s.text),
+      error: null,
+      is_error: false,
       stop_reason: s.stopReason,
       input_tokens: s.inputTokens,
       output_tokens: s.outputTokens,
@@ -28,6 +32,9 @@ function toStepRow(runId: string, userId: string, s: TraceStep) {
     output: clip(s.output),
     error: s.internalError ? clip(s.internalError) : null,
     is_error: s.isError,
+    stop_reason: null,
+    input_tokens: null,
+    output_tokens: null,
   };
 }
 

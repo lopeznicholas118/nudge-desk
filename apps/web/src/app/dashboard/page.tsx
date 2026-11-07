@@ -1,13 +1,13 @@
-import { weekStart } from "@nudge/core";
-import { requireUser } from "@/lib/auth";
-import { getConnectionStatus } from "@/lib/google/connection";
-import type { SyncSummary } from "@/lib/google/sync";
-import { signOut } from "../login/actions";
-import { addContact, disconnectGoogle, runAgentNow, syncCalendar } from "./actions";
-import { ApprovedCard } from "./_components/approved-card";
-import { DraftCard } from "./_components/draft-card";
-import { NudgeList, type NudgeView } from "./_components/nudge-list";
-import { ui } from "./_components/ui";
+import {weekStart} from "@nudge/core";
+import {requireUser} from "@/lib/auth";
+import {getConnectionStatus} from "@/lib/google/connection";
+import type {SyncSummary} from "@/lib/google/sync";
+import {signOut} from "../login/actions";
+import {addContact, disconnectGoogle, runAgentNow, syncCalendar } from "./actions";
+import {ApprovedCard} from "./_components/approved-card";
+import {DraftCard} from "./_components/draft-card";
+import {NudgeList, type NudgeView} from "./_components/nudge-list";
+import {ui} from "./_components/ui";
 
 export const maxDuration = 60;
 
@@ -38,7 +38,7 @@ export default async function Dashboard({
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const params = await searchParams;
-  const { supabase, user } = await requireUser();
+  const {supabase, user} = await requireUser();
 
   const [connection, contacts, drafts, nudges] = await Promise.all([
     getConnectionStatus(user.id),
@@ -50,13 +50,13 @@ export default async function Dashboard({
       .from("drafts")
       .select("id, contact_id, status, language, alt_language, body, rationale")
       .in("status", ["pending", "approved"])
-      .order("created_at", { ascending: false }),
+      .order("created_at", {ascending: false}),
     supabase
       .from("nudges")
       .select("id, contact_id, reason")
       .eq("state", "open")
       .eq("week_start", weekStart(new Date()))
-      .order("score", { ascending: false }),
+      .order("score", {ascending: false}),
   ]);
 
   const contactsById = new Map((contacts.data ?? []).map((c) => [c.id, c]));
@@ -189,9 +189,9 @@ export default async function Dashboard({
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Add a contact</h2>
         <form action={addContact} className="flex flex-wrap gap-2">
-          <input className={ui.input} name="full_name" placeholder="Full name" required />
-          <input className={ui.input} name="email" type="email" placeholder="Email (matches calendar)" />
-          <select className={ui.input} name="tier" defaultValue="warm">
+          <input className={`${ui.input} text-gray-400`} name="full_name" placeholder="Full name" required />
+          <input className={`${ui.input} text-gray-400`} name="email" type="email" placeholder="Email (matches calendar)" />
+          <select className={`${ui.input} text-gray-400`} name="tier" defaultValue="warm">
             <option value="close">close</option>
             <option value="warm">warm</option>
             <option value="weak">weak</option>

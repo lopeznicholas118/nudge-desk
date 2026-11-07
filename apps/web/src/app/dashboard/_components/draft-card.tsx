@@ -23,13 +23,13 @@ export function DraftCard({ draft, contactName }: { draft: DraftView; contactNam
           rows={5}
           maxLength={2000}
           aria-label={`Draft message to ${contactName}`}
-          className={`${ui.input} w-full`}
+          className={`${ui.input} w-full text-gray-300`}
         />
         {draft.rationale && <p className="text-sm text-gray-500">Why: {draft.rationale}</p>}
         <div className="flex flex-wrap gap-2">
           <button formAction={approveDraft} className={ui.primary}>Approve</button>
           <button formAction={saveDraft} className={ui.button}>Save edits</button>
-          <button formAction={translateDraft} name="target" value={other} className={ui.button}>
+          <button formAction={translateDraft} className={ui.button}>
             {toggleLabel}
           </button>
           <button formAction={discardDraft} className={ui.button}>Discard</button>
