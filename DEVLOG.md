@@ -1,9 +1,5 @@
 # Developer Log – Nudge Desk
 
-## November 5th, 2026
-
-### **Integrated** review states and actions in UI
-
 ## November 2nd, 2026
 
 ### **Integrated** server actions with one shared `requireUser`
