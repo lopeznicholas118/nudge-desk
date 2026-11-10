@@ -6,6 +6,22 @@
   "exports": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "eval": "tsx src/cli.ts",
+    "eval:calibrate": "tsx src/calibrate.ts",
+    "eval:usage": "tsx src/usage.ts"
+  },
+  "dependencies": {
+    "@nudge/agent": "workspace:*",
+    "@nudge/core": "workspace:*",
+    "@nudge/db": "workspace:*",
+    "dotenv": "^18.0.10",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "fast-check": "^4.10.2",
+    "tsx": "^4.23.15",
+    "vitest": "^5.1.0"
   }
 }
