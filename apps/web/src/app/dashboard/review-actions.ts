@@ -128,10 +128,9 @@ export async function discardDraft(formData: FormData) {
 export async function translateDraft(formData: FormData) {
   const {supabase, user} = await requireUser();
   const {id, body} = readDraftForm(formData);
-  const target = LanguageSchema.safeParse(formData.get("target"));
 
   return handle(async () => {
-    if (!id || !target.success) return "draft_missing";
+    if (!id) return "draft_missing";
     if (!body) return "draft_invalid";
 
     let draft = await loadPendingDraft(supabase, user.id, id);
@@ -141,6 +140,8 @@ export async function translateDraft(formData: FormData) {
 
     const language = asLanguage(draft.language);
     if (!language) return "failed";
+    // The button always means "show this in the other language".
+    const target: Language = language === "en" ? "es" : "en";
     const current: DraftText = {
       language,
       body: draft.body,
@@ -148,7 +149,7 @@ export async function translateDraft(formData: FormData) {
       altLanguage: asLanguage(draft.alt_language),
     };
 
-    const plan = planTranslation(current, target.data);
+    const plan = planTranslation(current, target);
     if (plan.kind === "noop") return "draft_saved";
 
     let next: DraftText;
@@ -156,12 +157,12 @@ export async function translateDraft(formData: FormData) {
       next = plan.next; // no LLM call
     } else {
       const env = anthropicEnv();
-      const llm = createAnthropicLlm({apiKey: env.ANTHROPIC_API_KEY, model: env.ANTHROPIC_MODEL});
-      const translated = await translateText(llm, {text: current.body, from: plan.from, to: plan.to});
+      const llm = createAnthropicLlm({ apiKey: env.ANTHROPIC_API_KEY, model: env.ANTHROPIC_MODEL });
+      const translated = await translateText(llm, { text: current.body, from: plan.from, to: plan.to });
       next = applyTranslation(current, translated, plan.to);
     }
 
-    const {data, error} = await supabase
+    const { data, error } = await supabase
       .from("drafts")
       .update({
         body: next.body,

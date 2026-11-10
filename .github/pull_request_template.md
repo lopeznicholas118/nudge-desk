@@ -25,4 +25,3 @@ Initially, the `run agent` button was not working, so I troubleshot with Claude 
 <img width="419" height="72" alt="pnpm test success" src="https://github.com/user-attachments/assets/9dfb2320-b29e-4b08-b1a7-bd47da20116d" />
 <img width="678" height="44" alt="supabase test db success" src="https://github.com/user-attachments/assets/fc43112d-d26f-4df4-9c95-334418bc7b9f" />
 <img width="300" height="201" alt="pnpm typecheck & pnpm lint success" src="https://github.com/user-attachments/assets/55bd946f-bebf-4b15-a008-44c06bcd1e3c" />
-
