@@ -1,5 +1,9 @@
 # Developer Log – Nudge Desk
 
+## November 17th, 2026
+
+### **Implemented** CLI to display eval judge results
+
 ## November 16th, 2026
 
 ### **Created** runner, reports, and comparison
