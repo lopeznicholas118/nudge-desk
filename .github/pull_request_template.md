@@ -1,23 +1,21 @@
 ## What changed
 
-Implemented Anthropic Claude AI eval judge
-
-Added hand-picked calibration set
+Implemented CLI
 
 ## Why
 
-The eval judge will ensure that the nudge agent's outputs match the appropriate style and format of the message, not being unprofessional while also not referring to events that never occurred with the person nor regurgitating cliché's.
-The hand-picked calibration set is necessary for the eval judge to know which responses are acceptable and which are not so that it can test the correct response type for the nudge agent.
+The CLI is necessary to view eval judge actions.
 
 ## How I tested
-- [x] `pnpm --filter @nudge/evals typecheck`
-- [x] `pnpm --filter @nudge/evals test`
+- [x] `pnpm eval --list`
+- [x] `pnpm typecheck`
 
-All tests passed.
+The eval list shows the eval judge thoughts on the drafts. Typecheck passed, including `packages/evals`.
 
 ## Notes / screenshots
 
-<img width="483" height="191" alt="pnpm tests passed with pnpm typecheck below" src="https://github.com/user-attachments/assets/8728dc47-d7d9-4cd6-b42a-7f9439dd3ede" />
+<img width="811" height="144" alt="eval list" src="https://github.com/user-attachments/assets/91f09b43-f765-4cae-abf1-cd6744999f74" />
+<img width="439" height="157" alt="typecheck" src="https://github.com/user-attachments/assets/764e4ba9-e222-4740-b5f2-d01bf2dd2c6f" />
 
 
 
