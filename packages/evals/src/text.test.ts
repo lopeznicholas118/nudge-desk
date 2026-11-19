@@ -48,7 +48,12 @@ describe("groundingViolations", () => {
 
   it("ignores sentence starts, I'm, weekdays, and Spanish openers", () => {
     const body = "Hey Ben, how are the interviews going? I'm free on Sunday. ¿Cómo estás?";
-    expect(groundingViolations(body, known)).toEqual({ ungroundedNames: [], ungroundedNumbers: [] });
+    expect(groundingViolations(body, known)).toEqual({ungroundedNames: [], ungroundedNumbers: []});
+  });
+
+  it("ignores month shorthands", () => {
+    const body = "Hey Ben, how are the interviews going? I remember our resume meeting on Oct 11.";
+    expect(groundingViolations(body, known).ungroundedNames).toEqual([]);
   });
 
   it("flags an invented place", () => {
