@@ -77,6 +77,7 @@ const ALLOWED = new Set(
     "i", "i'm", "i'll", "i've", "i'd",
     "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
     "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december",
+    "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec",
     "lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo",
     "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
     "zoom", "google", "meet", "facetime", "whatsapp", "slack", "teams", "linkedin",
