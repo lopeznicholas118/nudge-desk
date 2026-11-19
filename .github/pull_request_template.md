@@ -1,21 +1,25 @@
 ## What changed
 
-Implemented CLI
+Tested eval judge
+
+Added edit-ratio usage metric
 
 ## Why
 
-The CLI is necessary to view eval judge actions.
+The eval judge needed to be tested to ensure its ability to judge drafts worked as intended.
+The edit-ratio shows the user the statistics of the drafts they edited and discarded.
 
 ## How I tested
-- [x] `pnpm eval --list`
+- [x] `pnpm --filter @nudge/evals test`
 - [x] `pnpm typecheck`
+- [x] `pnpm:usage`
+- [x] `supabase test db`
 
-The eval list shows the eval judge thoughts on the drafts. Typecheck passed, including `packages/evals`.
+The judge kept failing at "Oct", so I updated `packages/evals/src/text.ts` to include three-letter month shorthands as allowed, benign words, with a test.
 
 ## Notes / screenshots
 
-<img width="811" height="144" alt="eval list" src="https://github.com/user-attachments/assets/91f09b43-f765-4cae-abf1-cd6744999f74" />
-<img width="439" height="157" alt="typecheck" src="https://github.com/user-attachments/assets/764e4ba9-e222-4740-b5f2-d01bf2dd2c6f" />
-
+<img width="577" height="202" alt="pnpm --filter @nudge/evals test results" src="https://github.com/user-attachments/assets/12472874-763d-46f1-9815-280ec2437751" />
+<img width="658" height="58" alt="Edit-ratio usage metric" src="https://github.com/user-attachments/assets/574f8d2c-ecde-40f2-9e0c-1df7391e79fd" />
 
 
