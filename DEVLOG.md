@@ -2,6 +2,8 @@
 
 ## November 18th, 2026
 
+### **Added** recorded baseline and edit-ratio usage metric
+
 ### **Fixed** month shorthands rejection error with a test
 
 ### **Tested** eval judge with calibration

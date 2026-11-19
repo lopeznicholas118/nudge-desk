@@ -15,6 +15,13 @@ Weeks are UTC ISO weeks (Monday start)
 
 Events in the past that are later cancelled or deleted aren’t removed. Only the upcoming window is refreshed wholesale. 
 Upserts keep past data stable and idempotent.
+The judge runs at the API’s default sampling temperature, so its verdicts carry noise. Calibration measures this, but a fixed seed or temperature would be better.
+The agent and judge are from the same model family, which can favor the agent’s own style. A different judge family would be a stronger check.
+Grounding catches invented capitalized names and numbers, not invented lowercase facts. The judge’s specificity score is the backstop.
+Fixtures are synthetic and small (nine cases). Real failure modes will come from real usage, so promote them into cases as you see them.
+The evals use the in-memory store. The Supabase adapter’s data scoping is covered by integration tests, but its behavior under a real model is not.
+Edit ratio excludes translated drafts, and a draft that is translated and then edited can’t be distinguished from a rewrite.
+Translation quality isn’t evaluated.
 
 ### Out of scope for v1:
 
