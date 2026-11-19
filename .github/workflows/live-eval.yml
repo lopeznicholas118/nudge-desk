@@ -1,0 +1,41 @@
+name: Live eval (manual)
+on:
+  workflow_dispatch:
+    inputs:
+      trials:
+        description: Trials per case
+        default: "3"
+      only:
+        description: Optional case filter
+        default: ""
+permissions:
+  contents: read
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Run eval
+        env:
+          ANTHROPIC_API_KEY: ${{secrets.ANTHROPIC_API_KEY}}
+          ANTHROPIC_MODEL: ${{vars.ANTHROPIC_MODEL}}
+          EVAL_JUDGE_MODEL: ${{vars.EVAL_JUDGE_MODEL}}
+          TRIALS: ${{inputs.trials}}
+          ONLY: ${{inputs.only}}
+        run: |
+          args=(--trials "$TRIALS" --label ci)
+          if [ -n "$ONLY" ]; then args+=(--only "$ONLY"); fi
+          pnpm eval "${args[@]}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-results
+          path: packages/evals/results/
