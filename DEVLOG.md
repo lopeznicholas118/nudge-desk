@@ -1,5 +1,11 @@
 # Developer Log – Nudge Desk
 
+## November 18th, 2026
+
+### **Fixed** month shorthands rejection error with a test
+
+### **Tested** eval judge with calibration
+
 ## November 17th, 2026
 
 ### **Implemented** CLI to display eval judge results
