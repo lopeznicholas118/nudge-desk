@@ -4,6 +4,7 @@ import {CALENDAR_SCOPE, createOAuthClient} from "@/lib/google/oauth";
 import {serverEnv} from "@/lib/env.server";
 import {createClient} from "@/lib/supabase/server";
 import {STATE_COOKIE} from "@/lib/google/oauth";
+import {reportError} from "@/lib/observability";
 
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
     return done("connected");
   } catch (err) {
     // Log only the message: Google client errors can embed the request body (with secrets).
-    console.error("google callback failed:", err instanceof Error ? err.message : "unknown error");
+    reportError("google callback", err, {});
     return done("error");
   }
 }

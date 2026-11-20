@@ -2,7 +2,7 @@ import {NextResponse} from "next/server";
 import {runAgentForUser} from "@/lib/agent/run";
 import {isAuthorizedCron} from "@/lib/cron/auth";
 import {processUser, type ProcessDeps} from "@/lib/cron/process";
-import {describeError} from "@/lib/errors";
+import {reportError} from "@/lib/observability";
 import {runCalendarSync} from "@/lib/google/sync";
 import {createAdminClient} from "@/lib/supabase/admin";
 
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
 
   const {data, error} = await db.rpc("users_with_contacts");
   if (error) {
-    console.error("cron: listing users failed:", describeError(error));
+    reportError("cron: listing users", error, {});
     return NextResponse.json({ ok: false, error: "list_users_failed" }, { status: 500 });
   }
 
@@ -66,7 +66,7 @@ export async function GET(request: Request) {
       tally(agent, outcome.agent);
     } catch (err) {
       failed++;
-      console.error("cron: user failed:", userId, describeError(err));
+      reportError("cron: user", err, {user_id: userId});
     }
   }
 

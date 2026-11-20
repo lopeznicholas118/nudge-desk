@@ -1,6 +1,6 @@
 import {weekStart} from "@nudge/core";
 import type {DbClient} from "@nudge/db";
-import {describeError} from "@/lib/errors";
+import {reportError} from "@/lib/observability";
 import {generateNudgesForUser} from "./nudges";
 
 export type AgentRunStatus = "completed" | "max_steps" | "max_tokens" | "error";
@@ -47,7 +47,7 @@ export async function processUser(deps: ProcessDeps, userId: string): Promise<Us
     const result = await deps.syncCalendar(db, userId, now);
     sync = result.ok ? "ok" : result.reason;
   } catch (err) {
-    console.error("cron: calendar sync failed for", userId, describeError(err));
+    reportError("cron: calendar sync", err, {user_id: userId});
     sync = "failed";
   }
 
@@ -64,7 +64,7 @@ export async function processUser(deps: ProcessDeps, userId: string): Promise<Us
     const run = await deps.runAgent(db, userId);
     return {...outcome, agent: run.status, draftsCreated: run.draftsCreated};
   } catch (err) {
-    console.error("cron: agent run failed for", userId, describeError(err));
+    reportError("cron: agent run", err, {user_id: userId});
     return {...outcome, agent: "failed"};
   }
 }

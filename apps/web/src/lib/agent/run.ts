@@ -2,14 +2,14 @@ import "server-only";
 import {createAnthropicLlm, PROMPT_VERSION, runAgent, type AgentResult, type TraceStep} from "@nudge/agent";
 import type {DbClient, Json} from "@nudge/db";
 import {anthropicEnv} from "@/lib/env.server";
-import {describeError} from "@/lib/errors";
+import {reportError} from "@/lib/observability";
 import {createSupabaseStore} from "./store";
 
 const MAX_STORED_CHARS = 4000;
 const clip = (text: string) => (text.length > MAX_STORED_CHARS ? text.slice(0, MAX_STORED_CHARS) + "…" : text);
 
 function toStepRow(runId: string, userId: string, s: TraceStep) {
-  const base = { run_id: runId, user_id: userId, step_index: s.index, latency_ms: Math.round(s.latencyMs) };
+  const base = {run_id: runId, user_id: userId, step_index: s.index, latency_ms: Math.round(s.latencyMs)};
   if (s.type === "llm") {
     return {
       ...base,
@@ -42,12 +42,12 @@ export async function runAgentForUser(
   supabase: DbClient,
   userId: string,
   triggeredBy: "manual" | "cron",
-): Promise<{ runId: string; result: AgentResult }> {
+): Promise<{runId: string; result: AgentResult}> {
   const env = anthropicEnv();
-  const llm = createAnthropicLlm({ apiKey: env.ANTHROPIC_API_KEY, model: env.ANTHROPIC_MODEL });
+  const llm = createAnthropicLlm({apiKey: env.ANTHROPIC_API_KEY, model: env.ANTHROPIC_MODEL});
 
   // Create the run row first so even a crash leaves evidence (status stays 'running').
-  const { data: run, error: runError } = await supabase
+  const {data: run, error: runError} = await supabase
     .from("agent_runs")
     .insert({ user_id: userId, triggered_by: triggeredBy, model: llm.model, prompt_version: PROMPT_VERSION })
     .select("id")
@@ -61,12 +61,25 @@ export async function runAgentForUser(
     runId: run.id,
   });
 
+  if (result.status === "error") {
+    reportError("agent_run", new Error(result.error ?? "agent run failed"), {
+      agent_run_id: run.id,
+      user_id: userId,
+    });
+  }
+
+  for (const s of result.steps) {
+    if (s.type === "tool" && s.internalError) {
+      reportError("agent_tool", new Error(s.internalError), { agent_run_id: run.id, tool: s.name });
+    }
+  }
+
   // Persisting the trace must never hide the result, so log failures instead of throwing.
   if (result.steps.length > 0) {
     const {error} = await supabase
       .from("agent_steps")
       .insert(result.steps.map((s) => toStepRow(run.id, userId, s)));
-    if (error) console.error("saving agent steps failed:", describeError(error));
+    if (error) reportError("agent_steps_save", error, {agent_run_id: run.id});
   }
 
   const {error: updateError} = await supabase
@@ -82,7 +95,7 @@ export async function runAgentForUser(
     })
     .eq("id", run.id)
     .eq("user_id", userId);
-  if (updateError) console.error("updating agent run failed:", describeError(updateError));
+  if (updateError) reportError("updating agent run", updateError, {});
 
   return {runId: run.id, result};
 }
