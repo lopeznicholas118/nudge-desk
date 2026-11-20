@@ -1,25 +1,21 @@
 ## What changed
 
-Tested eval judge
-
-Added edit-ratio usage metric
+Created CI with check, eval, and database workflows
 
 ## Why
 
-The eval judge needed to be tested to ensure its ability to judge drafts worked as intended.
-The edit-ratio shows the user the statistics of the drafts they edited and discarded.
+The CI is necessary for deployment.
 
 ## How I tested
-- [x] `pnpm --filter @nudge/evals test`
+- [x] `gh pr checks --watch`
 - [x] `pnpm typecheck`
-- [x] `pnpm:usage`
-- [x] `supabase test db`
 
-The judge kept failing at "Oct", so I updated `packages/evals/src/text.ts` to include three-letter month shorthands as allowed, benign words, with a test.
+Both `check` and `database` were failing, so, to fix `check`, I set `esbuild` to `true` and added `next typegen` to the `pnpm typecheck` command so it regenerates types and `LayoutProps` is allowed, not throwing an error. To fix `database`, the supabase version on the CI had to match my local version.
 
 ## Notes / screenshots
 
-<img width="577" height="202" alt="pnpm --filter @nudge/evals test results" src="https://github.com/user-attachments/assets/12472874-763d-46f1-9815-280ec2437751" />
-<img width="658" height="58" alt="Edit-ratio usage metric" src="https://github.com/user-attachments/assets/574f8d2c-ecde-40f2-9e0c-1df7391e79fd" />
+<img width="357" height="55" alt="apps/web pnpm typecheck after regeneration" src="https://github.com/user-attachments/assets/53168a3e-d2f9-4e95-8d5d-c481e2247d97" />
+<img width="219" height="48" alt="both checks passed" src="https://github.com/user-attachments/assets/c016266b-97b8-46b4-81de-d69c25ffa037" />
+
 
 
