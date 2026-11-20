@@ -1,5 +1,11 @@
 # Developer Log – Nudge Desk
 
+## November 19th, 2026
+
+### **Integrated** CI with pull request checks
+
+### **Added** sentry error reporting and /runs page
+
 ## November 18th, 2026
 
 ### **Added** recorded baseline and edit-ratio usage metric

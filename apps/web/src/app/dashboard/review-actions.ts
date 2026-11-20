@@ -14,7 +14,7 @@ import {
 } from "@nudge/core";
 import {requireUser} from "@/lib/auth";
 import {anthropicEnv} from "@/lib/env.server";
-import {describeError} from "@/lib/errors";
+import {reportError} from "@/lib/observability";
 
 type Db = Awaited<ReturnType<typeof requireUser>>["supabase"];
 
@@ -26,7 +26,7 @@ async function handle(run: () => Promise<string>): Promise<never> {
   try {
     code = await run();
   } catch (err) {
-    console.error("review action failed:", describeError(err));
+    reportError("review action", err, {});
     code = "failed";
   }
   revalidatePath("/dashboard");
@@ -162,7 +162,7 @@ export async function translateDraft(formData: FormData) {
       next = applyTranslation(current, translated, plan.to);
     }
 
-    const { data, error } = await supabase
+    const {data, error} = await supabase
       .from("drafts")
       .update({
         body: next.body,

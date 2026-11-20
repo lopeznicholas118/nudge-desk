@@ -8,6 +8,7 @@ import {ApprovedCard} from "./_components/approved-card";
 import {DraftCard} from "./_components/draft-card";
 import {NudgeList, type NudgeView} from "./_components/nudge-list";
 import {ui} from "./_components/ui";
+import Link from "next/link.js";
 
 export const maxDuration = 60;
 
@@ -147,6 +148,7 @@ export default async function Dashboard({
         <p className="text-sm text-gray-500">
           Drafts the people you&apos;re most overdue to contact. Nothing is ever sent.
         </p>
+        <Link href="/runs" className="text-sm underline">View run history</Link>
       </section>
 
       <section className="space-y-3">

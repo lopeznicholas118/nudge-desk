@@ -7,7 +7,7 @@ import {disconnectConnection} from "@/lib/google/connection";
 import {runCalendarSync} from "@/lib/google/sync";
 import {requireUser} from "@/lib/auth";
 import {runAgentForUser} from "@/lib/agent/run";
-import {describeError} from "@/lib/errors";
+import {reportError} from "@/lib/observability";
 
 const back = (key: string, value: string) => `/dashboard?${key}=${encodeURIComponent(value)}`;
 
@@ -32,7 +32,7 @@ export async function syncCalendar() {
   const {supabase, user} = await requireUser();
 
   const outcome = await runCalendarSync(supabase, user.id, new Date()).catch((err: unknown) => {
-    console.error("calendar sync failed:", err instanceof Error ? err.message : "unknown error");
+    reportError("calendar sync", err, {});
     return null;
   });
   if (!outcome) redirect(back("sync", "failed"));
@@ -50,7 +50,7 @@ export async function runAgentNow() {
   const {supabase, user} = await requireUser();
 
   const outcome = await runAgentForUser(supabase, user.id, "manual").catch((err: unknown) => {
-    console.error("agent run failed:", describeError(err));
+    reportError("agent run", err, {})
     return null;
   });
   if (!outcome) redirect("/dashboard?agent=failed");
