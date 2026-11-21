@@ -1,5 +1,9 @@
 # Developer Log – Nudge Desk
 
+## November 20th, 2026
+
+### **Deployed** nudge desk onto Vercel
+
 ## November 19th, 2026
 
 ### **Integrated** CI with pull request checks

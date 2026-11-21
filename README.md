@@ -2,8 +2,7 @@
 
 Nudge Desk is a personal-network agent that syncs your Google Calendar and manual contacts, ranks who you’re overdue to contact, drafts a message in your voice (English or Spanish), and puts the draft in an approval queue so nothing sends without **you**.
 
-As of now, Nudge Desk is a work-in-progress.
-When it is completed and deployed, the deployment link will be available.
+The deployment link is available [here](https://nudge-desk-seven.vercel.app/login).
 
 ### Note:
 
@@ -34,3 +33,6 @@ Add translation that is rate-limited or metered and logged to agent_runs.
 As of now, open nudges from past weeks stay open in the database and are simply hidden. An expiry job would tidy them.
 Older banners still display arbitrary text from the URL. The new actions use codes, and a cookie-based flash message would be the proper fix.
 Add database-level state machine for drafts beyond the query guards and the function.
+Production migrations are pushed by hand. A workflow_dispatch deploy job with Supabase secrets would automate it.
+Google connect isn’t testable on previews. A stable staging domain registered with Google would fix that.
+Sentry has no alert rules yet, and the debug pages have no pagination.
