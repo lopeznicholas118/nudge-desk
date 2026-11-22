@@ -1,5 +1,9 @@
 # Developer Log – Nudge Desk
 
+## November 22nd, 2026
+
+### **Updated** README.md file and landing page layout
+
 ## November 21st, 2026
 
 ### **Added** demo seed data to test fictional contacts
@@ -7,7 +11,6 @@
 ## November 20th, 2026
 
 ### **Deployed** nudge desk onto Vercel
-
 
 ## November 19th, 2026
 

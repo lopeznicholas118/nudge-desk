@@ -1,22 +1,28 @@
 ## What changed
 
-Uploaded seed demo data
+Updated README.md and redesigned landing page.
 
 ## Why
 
-Uploaded seed demo data on a script to test the agent with fictional data.
+THe README.md and landing page are the first impressions anyone will see, so it is imperative that they accurately present the project in a sufficient manner.
 
 ## How I tested
 - [x] `gh pr checks --watch`
-- [x] `pnpm --filter @nudge/evals typecheck`
-- [x] `pnpm demo:seed`
+- [x] `pnpm eval`
+- [x] `pnpm eval:calibrate`
+- [x] `pnpm typecheck`
+- [x] `pnpm lint`
+- [x] `pnpm test:integration`
+- [x] `supabase test db`
 
-The `demo:seed` command implants the demo contacts. The script is rerunnable, forming a new password each time.
+I re-ran the `eval` commands to ensure the eval judge was functioning properly. See README.md for more info.
 
 ## Notes / screenshots
 
-<img width="128" height="31" alt="pnpm typecheck" src="https://github.com/user-attachments/assets/8267ea02-d149-412e-b734-4fc0a73140c6" />
-<img width="712" height="701" alt="Demo account login with demo data" src="https://github.com/user-attachments/assets/8d932213-2b94-4ad7-bb66-ebc5e4349135" />
+<img width="365" height="223" alt="pnpm typecheck and lint success" src="https://github.com/user-attachments/assets/e295262b-98b2-42bd-846c-12e3f274e605" />
+<img width="691" height="263" alt="pnpm test:integration success" src="https://github.com/user-attachments/assets/2f653478-47ac-4a05-a493-3e1dfba32934" />
+<img width="670" height="126" alt="supabase test db success" src="https://github.com/user-attachments/assets/e8be0f95-e133-4982-9a21-ada182d0c553" />
+
 
 
 
