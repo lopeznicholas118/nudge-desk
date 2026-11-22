@@ -18,7 +18,8 @@
     "test:integration": "pnpm --filter @nudge/web test:integration",
     "eval": "pnpm --filter @nudge/evals eval",
     "eval:calibrate": "pnpm --filter @nudge/evals eval:calibrate",
-    "eval:usage": "pnpm --filter @nudge/evals eval:usage"
+    "eval:usage": "pnpm --filter @nudge/evals eval:usage",
+    "demo:seed": "pnpm --filter @nudge/evals demo:seed"
   },
   "devDependencies": {
     "@types/node": "^26.6.4",

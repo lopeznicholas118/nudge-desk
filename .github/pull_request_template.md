@@ -1,24 +1,23 @@
 ## What changed
 
-Created CI with check, eval, and database workflows
-
-Integrated Sentry for error checking and added /runs page
+Uploaded seed demo data
 
 ## Why
 
-The CI is necessary for deployment.
-The Sentry is necessary for error checking and an added /runs page shows all agent runs, verifying the Sentry work.
+Uploaded seed demo data on a script to test the agent with fictional data.
 
 ## How I tested
 - [x] `gh pr checks --watch`
-- [x] `pnpm typecheck`
+- [x] `pnpm --filter @nudge/evals typecheck`
+- [x] `pnpm demo:seed`
 
-Both `check` and `database` were failing, so, to fix `check`, I set `esbuild` to `true` and added `next typegen` to the `pnpm typecheck` command so it regenerates types and `LayoutProps` is allowed, not throwing an error. To fix `database`, the supabase version on the CI had to match my local version.
-I ran a mutation check with removing the Anthropic API key, verifying the Sentry error in /runs. I then reverted the API code back and verified the Sentry worked in both cases.
+The `demo:seed` command implants the demo contacts. The script is rerunnable, forming a new password each time.
 
 ## Notes / screenshots
 
-<img width="645" height="138" alt="/runs page" src="https://github.com/user-attachments/assets/03ed4a16-3313-4eca-b87a-a108a2c9516e" />
+<img width="128" height="31" alt="pnpm typecheck" src="https://github.com/user-attachments/assets/8267ea02-d149-412e-b734-4fc0a73140c6" />
+<img width="712" height="701" alt="Demo account login with demo data" src="https://github.com/user-attachments/assets/8d932213-2b94-4ad7-bb66-ebc5e4349135" />
+
 
 
 
