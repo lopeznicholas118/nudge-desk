@@ -1,38 +1,106 @@
-# Nudge Desk – Your personal-network assistant
+# Nudge Desk
 
-Nudge Desk is a personal-network agent that syncs your Google Calendar and manual contacts, ranks who you’re overdue to contact, drafts a message in your voice (English or Spanish), and puts the draft in an approval queue so nothing sends without **you**.
+A personal-network agent that tells you who you're overdue to contact, drafts the message in your voice (English or Spanish), and **never sends anything without you**.
 
-The deployment link is available [here](https://nudge-desk-seven.vercel.app/login).
+You can access the running project [here](https://nudge-desk-seven.vercel.app/).
 
-### Note:
+![CI](https://github.com/lopeznicholas118/nudge-desk/actions/workflows/ci.yml/badge.svg)
 
-Testing-mode OAuth apps are limited to test users, and Google expires refresh tokens for them after about 7 days.
+**Demo video:** TBD · **Live demo:** available on request (Google sign-in is limited to approved test users)
 
-Weeks are UTC ISO weeks (Monday start)
+Stack: TypeScript, Next.js, Supabase (Postgres, Auth, RLS), Anthropic API (tool calling), Google Calendar OAuth, Vercel, Sentry, GitHub Actions.
 
-### Known limitations:
+## What it does
 
-Events in the past that are later cancelled or deleted aren’t removed. Only the upcoming window is refreshed wholesale. 
-Upserts keep past data stable and idempotent.
-The judge runs at the API’s default sampling temperature, so its verdicts carry noise. Calibration measures this, but a fixed seed or temperature would be better.
-The agent and judge are from the same model family, which can favor the agent’s own style. A different judge family would be a stronger check.
-Grounding catches invented capitalized names and numbers, not invented lowercase facts. The judge’s specificity score is the backstop.
-Fixtures are synthetic and small (nine cases). Real failure modes will come from real usage, so promote them into cases as you see them.
-The evals use the in-memory store. The Supabase adapter’s data scoping is covered by integration tests, but its behavior under a real model is not.
-Edit ratio excludes translated drafts, and a draft that is translated and then edited can’t be distinguished from a rewrite.
-Translation quality isn’t evaluated.
+1. Syncs a read-only Google Calendar (or manual contacts) into a contact history.
+2. Ranks who's overdue by relationship tier (close 30 days, warm 90, weak 180) and explains why each nudge is there.
+3. An agent drafts a message per contact using only facts it looked up. You edit, translate (EN/ES), approve, and send it yourself. Pressing "I sent it" logs the outreach and closes the nudge.
 
-### Out of scope for v1:
+## Architecture
 
-No Gmail – its scopes are restricted and require a costly security review.
+```mermaid
+flowchart LR
+  you([You]) --> web["Next.js app<br/>server actions"]
+  web -->|"RLS-scoped session"| db[("Supabase Postgres")]
+  web --> agent["Agent loop<br/>@nudge/agent"]
+  agent -->|"tools scoped to one user"| db
+  agent --> llm["Anthropic API"]
+  web -->|"OAuth, encrypted refresh token"| gcal["Google Calendar API"]
+  cron["Vercel Cron, daily"] --> job["/api/cron/nudges"]
+  job -->|"service role, explicit user_id filters"| db
+  job --> agent
+  job --> gcal
+  web --> sentry["Sentry"]
+```
 
-### What I'd do next:
+```
+apps/web         Next.js app, server actions, cron route
+packages/core    pure logic: Zod schemas, scoring, planning, calendar extraction
+packages/db      generated DB types and client factory
+packages/agent   tool-calling loop, tools, prompt, translation
+packages/evals   eval harness, graders, LLM judge, CLI
+supabase/        migrations and pgTAP tests
+```
 
-Fan out one queued job per user instead of having a duration limit for starting new users after about 25 seconds.
-Add translation that is rate-limited or metered and logged to agent_runs.
-As of now, open nudges from past weeks stay open in the database and are simply hidden. An expiry job would tidy them.
-Older banners still display arbitrary text from the URL. The new actions use codes, and a cookie-based flash message would be the proper fix.
-Add database-level state machine for drafts beyond the query guards and the function.
-Production migrations are pushed by hand. A workflow_dispatch deploy job with Supabase secrets would automate it.
-Google connect isn’t testable on previews. A stable staging domain registered with Google would fix that.
-Sentry has no alert rules yet, and the debug pages have no pagination.
+## Design decisions
+
+| Decision | Why | Proof |
+|---|---|---|
+| RLS on every table, composite foreign keys | One user can't read, edit, or attach rows to another's data | `supabase/tests/database/` |
+| Google refresh tokens in a table with no client grants, AES-GCM encrypted | Tokens never reach a browser, and tampering fails to decrypt | `google_connections.test.sql`, `crypto.test.ts` |
+| The agent has no send tool | Drafts only: the user stays in control by construction | `only_known_tools` eval check |
+| Tools never accept a user id | The model can't ask for someone else's data | per-user store, `isolation.integration.test.ts` |
+| Text written by other people is marked `_untrusted` | Notes and meeting titles can carry injected instructions | 3 security eval cases that must pass every trial |
+| Idempotent cron: unique constraint plus `ON CONFLICT DO NOTHING` | Reruns and overlapping runs create no duplicates | `isolation.integration.test.ts` |
+| Service-role code filters by `user_id` explicitly | The service role bypasses RLS | `isolation.integration.test.ts` |
+| Pure `core` package | Scoring and planning are testable without I/O | property tests (fast-check) |
+| Hermetic evals with a pinned clock, trials, and a calibrated judge | Model output is noisy and fixtures shouldn't age | `packages/evals` |
+
+## Evals
+
+`pnpm eval` runs the real agent on nine fixture networks (three are prompt-injection attacks), grades each run with deterministic checks, and scores drafts with a separate LLM judge. Reports are compared with a committed baseline, and CI-style exit codes fail on regressions. Security cases must pass 100% of trials, with no baseline needed.
+
+| Prompt version | Trials | Pass rate | Security | Judge accepts |
+|---|---|---|---|---|
+| v1 | 27 | 100% | 100% | 89% |
+
+Judge calibration: agrees with my hand labels on 12 of 12 drafts (0 false accepts). Real-use metric: `pnpm eval:usage` reports how much I edit drafts.
+
+## Testing and CI
+
+| Layer | Command | Covers |
+|---|---|---|
+| pgTAP | `supabase test db` | RLS, column grants, constraints, functions |
+| Unit and property tests | `pnpm test` | scoring, planning, calendar extraction, agent loop, graders |
+| Integration | `pnpm test:integration` | cron and sync isolation against a real local database |
+| Live evals | `pnpm eval` (manual workflow in CI) | agent behavior against the real model |
+
+CI runs typecheck, lint, tests, build, pgTAP, a generated-types check, and the integration tests on every PR. `main` is protected by required checks.
+
+## Security and privacy
+
+- Google scope is `calendar.readonly` only. Gmail is deliberately not used.
+- Sentry receives opaque ids only. Session Replay is off, so contact data on screen is never recorded.
+- Demo data is synthetic (`@example.com`).
+
+## Run it locally
+
+```bash
+pnpm install
+supabase start                     # applies migrations on a fresh stack
+cp apps/web/.env.example apps/web/.env.local   # fill in values
+pnpm dev                           # http://localhost:3000
+pnpm demo:seed                     # optional: demo account with synthetic contacts
+```
+
+Required variables are listed in `apps/web/.env.example`: Supabase keys, Google OAuth client, `TOKEN_ENCRYPTION_KEY`, Anthropic key and model, `CRON_SECRET`. Use `localhost`, not `127.0.0.1`, because OAuth state cookies are per host.
+
+## Limitations and what I'd do next
+
+- Google OAuth is in Testing mode: approved test users only, and refresh tokens expire after about 7 days (the app prompts to reconnect). Production would need Google's verification.
+- The cron job processes users sequentially within a time budget. At scale I'd fan out one queued job per user.
+- Past calendar events that are later cancelled aren't removed. Only the upcoming window is refreshed.
+- Production migrations are pushed by hand. A gated deploy job would automate it.
+- Grounding checks catch invented names and numbers, not invented lowercase facts. The judge is the backstop.
+- The judge and agent come from the same model family. A different judge family would be a stronger check.
+- Translation quality isn't evaluated, and translation isn't metered.
