@@ -1,5 +1,9 @@
 # Developer Log – Nudge Desk
 
+## November 23rd, 2026
+
+### **Incorporated** a MIT License
+
 ## November 22nd, 2026
 
 ### **Updated** README.md file and landing page layout
